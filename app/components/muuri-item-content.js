@@ -1,0 +1,1 @@
+export { default } from 'ember-cli-muuri/components/muuri-item-content';

@@ -1,7 +1,7 @@
 ember-cli-muuri
 ==============================================================================
 
-[Short description of the addon.]
+an EmberJS add-on for Muuri
 
 
 Compatibility

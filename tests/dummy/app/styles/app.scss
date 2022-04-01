@@ -1,0 +1,15 @@
+.muuri {
+  &__item {
+    width: calc(100% - 16px);
+    height: 100px;
+    margin: 4px 4px;
+    border: 4px solid red;
+    border-radius: 8px;
+
+    background-color: #fff;
+
+    &-content {
+      padding: 8px;
+    }
+  }
+}

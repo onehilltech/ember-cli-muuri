@@ -1,0 +1,27 @@
+.muuri {
+  position: relative;
+}
+
+.muuri__item {
+  display: block;
+  position: absolute;
+  z-index: 1;
+}
+
+.muuri__item-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.muuri__item-content.muuri-item-dragging {
+  z-index: 3;
+}
+
+.muuri__item-content.muuri-item-releasing {
+  z-index: 2;
+}
+
+.muuri__item-content.muuri-item-hidden {
+  z-index: 0;
+}
