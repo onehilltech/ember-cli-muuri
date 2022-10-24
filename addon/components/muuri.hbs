@@ -1,3 +1,5 @@
-<div class="muuri" ...attributes {{did-insert this.didInsert}}>
-  {{yield}}
+<div class="muuri" ...attributes
+  {{did-insert this.didInsert}}
+  {{did-update this.refresh @data}}>
+  {{yield @data}}
 </div>

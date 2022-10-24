@@ -1,4 +1,8 @@
-<Muuri @dragEnabled="true" @move={{this.move}}>
-  <MuuriItem id="item1">Item 1</MuuriItem>
-  <MuuriItem id="item2">Item 2</MuuriItem>
+<button {{on "click" this.addItem}}>Add Item</button>
+<button {{on "click" this.removeItem}}>Remove Item</button>
+
+<Muuri @data={{this.items}} @dragEnabled="true" @move={{this.move}} as |data|>
+  {{#each data as |item|}}
+    <MuuriItem @id={{item.id}}>{{item.label}}</MuuriItem>
+  {{/each}}
 </Muuri>

@@ -3,7 +3,7 @@ import { action } from '@ember/object';
 import { isPresent } from '@ember/utils';
 
 import Muuri from 'muuri'
-import { defaultsDeep } from 'lodash';
+import { defaultsDeep, differenceWith } from 'lodash';
 
 import decorator from '@onehilltech/decorator';
 
@@ -14,14 +14,47 @@ const event = decorator (function (target, name, descriptor, options) {
   return descriptor;
 });
 
+const MUURI_ITEM_SELECTOR = '.muuri-item';
+
 /**
  * @class MuuriComponent
  */
 export default class MuuriComponent extends Component {
+  constructor () {
+    super (...arguments);
+    this._elements = new WeakMap ();
+  }
+
   @action
   didInsert (element) {
     this._muuri = new Muuri (element, this.options);
+
+    this.data.forEach (data => {
+      const itemElement = element.querySelector (`${MUURI_ITEM_SELECTOR}[data-id="${data.id}"]`);
+      this._elements.set (data, itemElement);
+    });
+
     this._initEventListeners ();
+  }
+
+  get data () {
+    return this.args.data || [];
+  }
+
+  @action
+  refresh () {
+    // Find the list of data items that have been added and removed. After we have a list of
+    // items that have been added to the data, we need to locate its corresponding HTML element.
+    // This element will be added to the grid. For the data that has been removed, we need to
+    // remove the corresponding items from the grid.
+
+    const items = this._muuri.getItems ();
+    const added = differenceWith (this.args.data, items, (data, item) => `${data.id}` === item.getElement ().id);
+    const elements = added.map (item => this._muuri.getElement ().querySelector (`${MUURI_ITEM_SELECTOR}[data-id="${item.id}"]`));
+    const removed = differenceWith (items, this.args.data, (item, data) => `${data.id}` === item.getElement ().id);
+
+    this._muuri.add (elements);
+    this._muuri.remove (removed);
   }
 
   _initEventListeners () {
@@ -47,7 +80,7 @@ export default class MuuriComponent extends Component {
   }
 
   get options () {
-    return defaultsDeep ({ items: '.muuri__item' }, this.optionsFromArgs, this.args.options, Muuri.defaultOptions);
+    return defaultsDeep ({ items: MUURI_ITEM_SELECTOR }, this.optionsFromArgs, this.args.options, Muuri.defaultOptions);
   }
 
   get optionsFromArgs () {
@@ -78,7 +111,7 @@ export default class MuuriComponent extends Component {
       dragEnabled: this.args.dragEnabled,
       dragContainer: this.args.dragContainer,
       dragHandle: this.args.dragHandle,
-      dragStartPredicate: this.args.dragStartPredicate,
+      dragStartPredicate: this.dragStartPredicate.bind (this),
       dragAxis: this.args.dragAxis,
       dragSort: this.args.dragSort,
       dragSortHeuristics: this.args.dragSortHeuristics,
@@ -208,6 +241,23 @@ export default class MuuriComponent extends Component {
   @event
   dragReleaseEnd () {
 
+  }
+
+  dragStartPredicate (ev) {
+    // Let's check if the current element is draggable. If the element is not draggable,
+    // then we can stop here and return.
+
+    const draggableByDefault = ('draggable' in ev.getElement ().dataset);
+
+    if (!draggableByDefault) {
+      return false;
+    }
+
+    if (this.args.dragStartPredicate) {
+      return this.args.dragStartPredicate (ev);
+    }
+
+    return draggableByDefault;
   }
 
   @event
