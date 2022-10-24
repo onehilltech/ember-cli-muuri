@@ -1,6 +1,6 @@
 {
   "name": "ember-cli-muuri",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "an EmberJS add-on for Muuri",
   "keywords": [
     "ember-addon",
