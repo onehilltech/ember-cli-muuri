@@ -54,7 +54,7 @@ export default class MuuriComponent extends Component {
     const removed = differenceWith (items, this.args.data, (item, data) => `${data.id}` === item.getElement ().id);
 
     this._muuri.add (elements);
-    this._muuri.remove (removed);
+    this._muuri.remove (removed, { removeElements: true });
   }
 
   _initEventListeners () {
